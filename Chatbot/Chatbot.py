@@ -1,11 +1,13 @@
 import random
 
-GREETING_RESPONSE = ["Alright dude?", "Hey, how you doin'?", "Alright bro?", "Alright mate?"]
 GREETING = ["hello", "hi", "hey", "yo", "sup"]
+GREETING_RESPONSE = ["Alright dude?", "Hey, how you doin'?", "Alright bro?", "Alright mate?"]
 
-SWEAR = ["shit", "fuck", "cunt", "twat", "asshole", "arsehole", "bitch"]
+SWEAR = ["shit", "fuck", "cunt", "twat", "asshole", "arsehole", "bitch", "ass"]
 SWEAR_RESPONSE = ["Don't swear you little shit", "Watch your profanity", "Excuse me?!"]
 
+FOOD = ["chocolate", "pizza", "chicken", "curry", "pasta", "soup"]
+FOOD_RESPONSE = ["Yum", "Stop making me hungry", "Mmm tasty"]
 
 
 def chatbotIntro():
@@ -20,18 +22,23 @@ def newQ():
 	chatbot()
 	
 def chatbot():
-	global answer
+	global answer 
 
-	if answer in GREETING:
+	if any(x in answer for x in GREETING):
 		print (random.choice(GREETING_RESPONSE))
 		answer = raw_input().lower()
 		chatbot()
 		
-	if answer in SWEAR:
+	if any(x in answer for x in SWEAR):
 		print (random.choice(SWEAR_RESPONSE))
 		answer = raw_input().lower()
 		chatbot()
-	
+        
+	if any(x in answer for x in FOOD):
+		print (random.choice(FOOD_RESPONSE))
+		answer = raw_input().lower()
+		chatbot()
+		
 	newQ()
 	
 chatbotIntro()
