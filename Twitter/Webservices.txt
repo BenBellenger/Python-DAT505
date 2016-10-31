@@ -1,0 +1,346 @@
+d
+
+
+
+
+
+				DAT505 - PYTHON
+			        WEBSERVICE APIs
+
+				      by
+
+				 Dr Simon Lock
+
+~
+INTRODUCTION
+
+
+  o  Today we will be looking at webservice APIs
+
+  o  That is, services that we can call over the web via HTTP
+
+  o  Sometimes called <U>RESTful</U> services (REpresentational State Transfer)
+
+  o  These can be invoked using raw GET and POST requests
+
+  o  Although it is easier to use high-level, language-specific library
+
+  o  In particular, we will look at <U>Twitter</U> and <U>Phant</U> APIs
+
+  o  INDE students might have seen some of these before (but not with Python !)
+
+~
+INSTALLING PYTHON TWITTER LIBRARY
+
+
+  o  To make use of Twitter, you will need to install the Twitter Library
+
+  o  This might already be installed if you are using a Raspberry Pi
+
+  o  If you are on another platform and have pip, you can install with:
+
+	pip install python-twitter
+
+  o  You might optionally have to install oauth as well (it will ask !)
+
+  o  To install on a lab machine, download a zip of the google code repo:
+
+%	https://code.google.com/archive/p/python-twitter/downloads
+
+  o  Unzip, CD into the folder and run:
+
+	python setup.py install --user
+
+~
+CREATING TWITTER AUTHENTICATION KEYS
+
+
+  o  In order to use the Twitter API, you will need to register as a developer
+
+  o  Then create an app in order to generate authentication keys and secrets:
+
+%	https://dev.twitter.com/apps
+
+  o  I've put my keys and secrets into a file called <U>TwitterCredentials.txt</U>
+
+  o  This is a text file containing 4 keys and secrets required by Twitter:
+
+	- Consumer Key
+	- Consumer Secret
+	- Access Token Key
+	- Access Token Secret
+
+  o  This keeps code tidy (they are long) and stops people seeing my secrets !
+
+~
+TWITTER STATUS READ
+
+
+    First import the required libraries
+&	import twitter
+&
+    Hardcode a user ID into a variable (Stephen Fry)
+&	user = 15439395
+
+    Load in my keys and secrets from the credentials file into a list (array)
+&	file = open("res/TwitterCredentials.txt")
+&	creds = file.read().split('\n')
+
+    Create a new API wrapper, passing in my credentials one at a time
+&	api = twitter.Api(creds[0],creds[1],creds[2],creds[3])
+
+    Get the most recent batch of status updates from the user
+&	statuses = api.GetUserTimeline(user)
+
+    Just print out the most recent one
+&	print (statuses[0].text)
+
+~
+TWITTER STATUS UPDATE
+
+
+    Import required modules
+&	import twitter, datetime
+&
+    Load in my keys and secrets from the credentials file into a list (array)
+&	file = open("res/TwitterCredentials.txt")
+&	creds = file.read().split('\n')
+
+    Create a new API wrapper, passing in my credentials one at a time
+&	api = twitter.Api(creds[0],creds[1],creds[2],creds[3])
+
+    Find out what time it is now (in Coordinated Universal Time)
+&	timestamp = datetime.datetime.utcnow()
+
+    Post status update and get the response from Twitter
+&	response = api.PostUpdate("Tweeted at " + str(timestamp))
+
+    Print out response text (should be the status update if everything worked)
+&	print("Status updated to: " + response.text)
+
+~
+TWITTER STATUS UPDATE - CHECK
+
+
+    We can check to make sure that the status update really worked by going
+    to my Twitter page:
+
+%	https://twitter.com/5IM0NL0CK
+
+    Should have the new tweet at the top of my timeline
+
+~
+TWEETING
+
+
+    <R>[Q&A]</R> What kinds of data might you be able to auto tweet in this way ?
+
+~
+PHANT
+
+
+  o  Phant is an internet-of-things real-time data-sharing platform
+
+  o  You can upload data onto it, or pull data down from it
+
+  o  Phant is short for "Elephant" (because it never forgets !)
+
+%	https://data.sparkfun.com/
+
+  o  The classic use of Phant is for publishing realtime weather station data
+
+  o  But there is lots of potential for other, more interesting uses
+
+
+~
+CREATING DATA STREAMS
+
+
+  Using Phant it is easy enough to create a new data stream:
+
+%	https://data.sparkfun.com/streams/make
+
+~
+MY PHANT STREAM
+
+
+  I've already set up a Phant stream, which can be found here:
+
+%	http://data.sparkfun.com/streams/g6qpZArOgzIa2J7KDvNA
+
+~
+PHANT API
+
+
+  Phant has an HTTP interface, details of which can be found here:
+
+%	http://phant.io/docs/
+
+~
+UPLOADING DATA
+
+    Import library
+&	import urllib2
+
+    Load in credentials
+&	file = open("res/PhantCredentials.txt")
+&	creds = file.read().split('\n')
+&	publicKey = creds[0];
+&	privateKey = creds[1];
+
+    Construct URL
+&	baseURL = "http://data.sparkfun.com/input/";
+&	url = baseURL + publicKey + "?private_key=" + privateKey + "&spm=42"
+
+    Make request using the URL
+&	response = urllib2.urlopen(url)
+&	message = response.read()
+&	print(message)
+
+~
+MY PHANT STREAM
+
+  We can check out my Phant stream to make sure it has worked:
+
+%	http://data.sparkfun.com/streams/g6qpZArOgzIa2J7KDvNA
+
+~
+A MORE INTERESTING EXAMPLE
+
+&	import subprocess, urllib2
+
+&	file = open("res/PhantCredentials.txt")
+&	creds = file.read().split('\n')
+&	publicKey = creds[0];
+&	privateKey = creds[1];
+&	baseURL = "http://data.sparkfun.com/input/";
+
+&	command = ["top", "-l", "1"];
+&	process = subprocess.Popen(command, stdout=subprocess.PIPE)
+&	raw = process.stdout.read()
+&	CPUInfo = raw.split('\n')[3]
+&	CPUInfo = CPUInfo.replace("%","");
+&	userUsage = float(CPUInfo.split(" ")[2])
+&	systemUsage = float(CPUInfo.split(" ")[4])
+&	total = userUsage + systemUsage
+&	print("Total CPU usage: " + str(total))
+
+&	url = baseURL+publicKey+"?private_key="+privateKey+"&spm="+str(total)
+&	urllib2.urlopen(url).read()
+
+~
+MY PHANT STREAM
+
+  We can check out my Phant stream to make sure it has worked:
+
+%	http://data.sparkfun.com/streams/g6qpZArOgzIa2J7KDvNA
+
+~
+DOWNLOADING DATA
+
+  Retrieving Phant data from the stream is just as easy:
+
+    Import libraries
+&	import urllib2, json
+
+    Load in credentials
+&	file = open("res/PhantCredentials.txt")
+&	creds = file.read().split('\n')
+&	publicKey = creds[0];
+
+    Construct URL, passing in public key and ask for JSON data to be returned
+&	baseURL = "http://data.sparkfun.com/output/";
+&	response = urllib2.urlopen(baseURL + publicKey + ".json")
+
+    Parse in the JSON data from the response
+&	data = json.load(response)
+
+    Loop backwards through the data (newest first) printing it out
+&	for x in reversed(data):
+&	    print(x["spm"])
+
+~
+<R>EXERCISE</R>
+
+
+    Let's do a quick exercise...
+
+    On paper (or on your laptop) plan out how you would write an app that:
+
+	-  Checks the UKFootieScores twitter page:
+
+%		https://twitter.com/UKFootieScores
+
+	-  Identifies matches involving Argyle
+
+	-  Logs Plymouth's goal tally on Phant
+
+~
+ARGPHANT
+
+<?>
+&	import twitter, datetime, urllib2
+&	user = 210228906
+&	file = open("res/TwitterCredentials.txt")
+&	creds = file.read().split('\n')
+&	twit = twitter.Api(creds[0],creds[1],creds[2],creds[3])
+&	statuses = twit.GetUserTimeline(user,count=200)
+
+&	total = 0
+&	for status in statuses:
+&	    index = status.text.find("Plymouth")
+&	    if(index != -1): total += int(status.text[index+9:index+10])
+&	print("Total number of goals: " + str(total))
+
+&	file = open("res/PhantCredentials.txt")
+&	creds = file.read().split('\n')
+&	baseURL = "http://data.sparkfun.com/input/";
+&	url = baseURL+creds[0]+"?private_key="+creds[1]+"&spm="+str(total)
+&	urllib2.urlopen(url).read()
+</?>
+~
+CHECK FEED UPDATE
+
+
+    Let's check the previous code worked:
+
+%	http://data.sparkfun.com/streams/g6qpZArOgzIa2J7KDvNA
+
+~
+OTHER WEB SERVICES
+
+
+  o  Twitter and Phant are just two of a huge variety of web services
+
+  o  They are useful to DAT students, so we cover them here
+
+  o  Check out the programmable web search site for other services:
+
+%	http://www.programmableweb.com/category/all/apis
+
+  o  Often there is a Python library available to make things easy
+
+  o  When there isn't, you can always use HTTP GET or POST with urllib2
+
+~
+PRACTICAL
+
+
+    For the next practical exercise you must create an auto-tweet agent...
+
+    Your program should identify the most recent page viewed by your browser
+    (by looking in either the "Current Session" or "History" file)
+
+    It should then acquire the title of the page last viewed.
+    For example, the title of the Ebay main page is:
+	Electronics, Cars, Fashion, Collectibles, Coupons and More | eBay
+
+    Your program should then tweet the fact that you liked the page:
+	I'm really liking Electronics, Cars, Fashion, Collectibles...
+
+    You'll get more marks if you use the History file (it's harder !)
+
+    Include a loop so that it tweets about the most recent page every hour
+
+    Leave it running on your computer and see what effect it has ;o)
+

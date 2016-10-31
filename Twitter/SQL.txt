@@ -1,0 +1,99 @@
+
+
+
+
+
+
+				DAT505 - PYTHON
+			           DATABASES
+
+				      by
+
+				 Dr Simon Lock
+
+~
+DATABASES
+
+
+  o  Python comes with SQLite (version 3) database support built in
+
+  o  It's very small and lightweight
+
+  o  It's open-source and free-to-use
+
+  o  It's fairly easy to work with (if you know your SQL)
+
+  o  It's simple - databases are a single file which you connect to directly
+
+  o  No need to have a heavyweight server running
+
+  o  There is a database management tool called <U>sqlite3</U> that you can use
+
+  o  We can however perform most functions using Python code...
+
+~
+SQLITE CREATION AND INSERTION EXAMPLE
+
+    Import the required library
+&	import sqlite3
+&
+    Connect to database file and get a "cursor" (thing we use to send commands)
+&	console = sqlite3.connect("res/restaurant.db")
+&	cursor = console.cursor()
+
+    If "menu" table already exists, delete it so that we can start afresh
+&	cursor.execute("DROP TABLE IF EXISTS menu")
+
+    Create a new table called menu to hold our tasty offerings
+&	cursor.execute("CREATE TABLE menu(id INT, name TEXT, price FLOAT)")
+
+    Insert a couple of nutritious meals into the menu
+&	cursor.execute("INSERT INTO menu VALUES(1,'Spam and Eggs',4.99)")
+&	cursor.execute("INSERT INTO menu VALUES(2,'Spam, Eggs and Spam',6.99)")
+
+    Call "commit" to save changes to file, then "close" to disconnect database
+&	console.commit()
+&	console.close()
+
+~
+SQLITE QUERY EXAMPLE
+
+    Import the required library
+&	import sqlite3
+&
+    Connect to database file and get a "cursor"
+&	console = sqlite3.connect("res/restaurant.db")
+&	cursor = console.cursor()
+
+    Query database for all meals
+&	cursor.execute("SELECT * FROM menu")
+
+    Get all the search results into a list (array)
+&	rows = cursor.fetchall()
+
+    Print out each row in the results set
+&	for row in rows: print row
+
+    Close the console to disconnect from the database
+&	console.close()
+
+~
+SQLITE COMMAND SET
+
+
+  o  The following SQL commands are supported by SQLite:
+
+	CREATE TABLE
+	DELETE
+	DROP TABLE
+	INSERT
+	REPLACE
+	SELECT
+	UPDATE
+	JOIN
+
+  o  There are others, but the above are the most frequently used
+
+  o  We shan't go into any detail on these
+
+  o  You are all probably SQL experts by now anyway ;o)
