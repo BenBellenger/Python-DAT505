@@ -16,8 +16,19 @@ def getTweet():
 def newTweet():
 	response = api.PostUpdate("Tweeted at " + str(timestamp))
 	print("Status updated to: " + response.text)
+	
+def tweetHistory():
+	response = api.PostUpdate("I like " + str(f))
+	print("Status updated to: " + response.text)
+
+	
+f = open('C:\Users\Ben\AppData\Local\Google\Chrome\User Data\Default\History', 'rb')
+data = f.read()
+f.close()
+f = open('C:\Users\Ben\Desktop\Python-DAT505\Twitter\History.txt', 'w')
+f.write(repr(data))
+f.close()
 
 getTweet()
 newTweet()
-
-#C:\Users\Ben\AppData\Local\Google\Chrome\User Data\Default\Current Session
+tweetHistory()
